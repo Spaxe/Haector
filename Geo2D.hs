@@ -11,3 +11,6 @@ Portability :  portable
 Definitions for simple 2D shapes such as rectangles and lines.
 -}
 
+module Geo2D
+  where
+  
