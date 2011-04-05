@@ -11,20 +11,22 @@ Portability :  portable
 Definitions for simple 2D shapes such as rectangles and lines.
 -}
 
-module Geo
-  where
+module Geo (
+  Vec3,
+  test
+) where
   
 -----------------------------------------------------------
 -- Vector Definition - It all starts here
 -----------------------------------------------------------
-data Vec3 a = Vec3 a a a
-            deriving (Show, Eq)
-
-instance (Num a) => Num (Vec3 a) where
-  (Vec3 i j k) + (Vec3 u v w) = Vec3 (i+u) (j+v) (k+w)
-  _ * _ = error "(*) is undefined for Vec3"
+data Vec3 = Vec3 Double Double Double
+            deriving (Eq)
+            
+instance Show Vec3 where
+  show (Vec3 a b c) = "Vec3(" ++ show a ++ ", " ++ show b ++ ", " ++ show c ++ ")"
   
-  
+instance Num Vec3 where
+  Vec3 a b c + Vec3 i j k = Vec3 (a+i) (b+j) (c+k)
 -----------------------------------------------------------
 -- Unit Testing
 -----------------------------------------------------------
@@ -37,8 +39,7 @@ diff input expected | input /= expected = (0, "Passed")
 test = do
   -- Insert unit test here
   let trials = same (x+y) (y+x)
-             : diff (x+y) (x+y)
-             : diff (3*3) (x+y)
+             : diff (x+y) (x+z)
              : []
 
   --------------------------
