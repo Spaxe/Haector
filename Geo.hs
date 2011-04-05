@@ -14,23 +14,24 @@ Definitions for simple 2D shapes such as rectangles and lines.
 module Geo (
   -- Uncomment this if you need to expose unit testing
   -- test,
-  Vec3,
+  Vec3 (..),
   fromVec3,
-  
-
+  VecOps (..),
+  line2,
+  LineOps (..)
 ) where
   
 -----------------------------------------------------------
--- Vector Definition - It all starts here
+-- | Vector Definition - It all starts here
 -----------------------------------------------------------
--- | 3D Vector (2D Homogeneous)
-data Vec3 a = Vec3 a a a
+-- 3D Vector (2D Homogeneous)
+data Vec3 = Vec3 Double Double Double
             deriving (Eq)
             
-instance (Show a) => Show (Vec3 a) where
+instance Show Vec3 where
   show (Vec3 x y z) = "Vec3(" ++ show x ++ ", " ++ show y ++ ", " ++ show z ++ ")"
   
-instance (Num a) => Num (Vec3 a) where
+instance Num Vec3 where
   -- | Vector addition
   Vec3 x y z + Vec3 i j k = Vec3 (x+i) (y+j) (z+k)
   -- | Vector negation / subtraction
@@ -46,24 +47,23 @@ instance (Num a) => Num (Vec3 a) where
   fromInteger _ = error "fromInteger is not implemented for Vec3."
   
 -- | Converts Vec3 to a list
-fromVec3 :: Vec3 a -> [a]
+fromVec3 :: Vec3 -> [Double]
 fromVec3 (Vec3 x y z) = [x, y, z]
 
 -----------------------------------------------------------
--- Vector Operations
+-- | Vector Operations
 -----------------------------------------------------------
--- | Vector operations
 class VecOps v where
   -- | Calculates the length of the vector
-  vecLength :: (Floating a) => v a -> a
+  vecLength :: v -> Double
   -- | Scales the vector by a factor
-  vecScale :: (Num a) => v a -> a -> v a
+  vecScale :: v -> Double -> v
   -- | Returns the unit vector
-  vecUnit :: (Floating a) => v a -> v a
+  vecUnit :: v -> v
   -- | Dot product
-  vecDot :: (Num a) => v a -> v a -> a
+  vecDot :: v -> v -> Double
   -- | Cross product
-  vecCross :: (Num a) => v a -> v a -> v a
+  vecCross :: v -> v -> v
 
 instance VecOps Vec3 where
   vecLength (Vec3 x y z) = sqrt(x*x + y*y + z*z)
@@ -73,7 +73,42 @@ instance VecOps Vec3 where
   vecDot (Vec3 x y z) (Vec3 i j k) = x*i + y*j + z*k
   vecCross (Vec3 x y z) (Vec3 i j k) = Vec3 (y*k-z*j) (x*k-z*i) (x*j-y*i)
 
--- | Vector scaling by a factor
+-----------------------------------------------------------
+-- | Primitive Geometry
+-----------------------------------------------------------
+data Line2 = Line2 Vec3 Vec3
+  deriving (Eq)
+
+instance Show Line2 where
+  show (Line2 (Vec3 a b x) (Vec3 c d y)) | x /= 1 || y /= 1 = "Line2(" ++ full ++ ")"
+                                         | otherwise        = "Line2(" ++ partial ++ ")"
+    where
+      full = show a ++ ", " ++ show b ++ ", " ++ show x ++ ")(" ++ show c ++ ", " ++ show d ++ ", " ++ show y
+      partial = show a ++ ", " ++ show b ++ ")(" ++ show c ++ ", " ++ show d
+  
+-- | Creates a new Line2 object
+line2 :: Double -> Double -> Double -> Double -> Line2
+line2 a b c d = Line2 (Vec3 a b 1) (Vec3 c d 1)
+
+-- | Converts line to a list of Vec3
+fromLine2 :: Line2 -> [Vec3]
+fromLine2 (Line2 a b) = [a, b] 
+
+-----------------------------------------------------------
+-- | Line Operations
+-----------------------------------------------------------
+class LineOps n v | n -> v where
+  -- | Returns the starting vector
+  lineStart :: n -> v
+  -- | Returns the ending vector
+  lineEnd :: n -> v
+  -- | Returns the vector represented by the line
+  lineVec :: n -> v
+  
+instance LineOps Line2 Vec3 where
+  lineStart (Line2 a _) = a
+  lineEnd (Line2 _ b) = b
+  lineVec (Line2 a b) = b - a
 
 -----------------------------------------------------------
 -- Unit Testing
@@ -90,6 +125,8 @@ test = do
   let y = Vec3 0 1 0
   let z = Vec3 0 0 1
   let w = Vec3 2 0 0
+  let a = line2 0 1 2 3
+  let b = line2 0 1 1 2
   -- Insert unit test here
   let trials = same (x+y) (y+x)
              : diff (x+y) (x+z)
@@ -104,6 +141,12 @@ test = do
              : diff (vecDot y z) 1
              : same (vecCross x y) z
              : diff (vecCross y x) z
+             : same (Line2 (Vec3 0 1 1) (Vec3 1 2 1)) b
+             : diff a b
+             : same (lineStart a) (Vec3 0 1 1)
+             : same (lineEnd b) (Vec3 1 2 1)
+             : diff (lineVec a) (lineVec b)
+             : same (lineVec b) (x + y)
              : []
 
   --------------------------
