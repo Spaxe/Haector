@@ -12,21 +12,59 @@ Definitions for simple 2D shapes such as rectangles and lines.
 -}
 
 module Geo (
+  -- Uncomment this if you need to expose unit testing
+  -- test,
   Vec3,
-  test
+  fromVec3,
+  
+
 ) where
   
 -----------------------------------------------------------
 -- Vector Definition - It all starts here
 -----------------------------------------------------------
-data Vec3 = Vec3 Double Double Double
+-- | 3D Vector (2D Homogeneous)
+data Vec3 a = Vec3 a a a
             deriving (Eq)
             
-instance Show Vec3 where
-  show (Vec3 a b c) = "Vec3(" ++ show a ++ ", " ++ show b ++ ", " ++ show c ++ ")"
+instance (Show a) => Show (Vec3 a) where
+  show (Vec3 x y z) = "Vec3(" ++ show x ++ ", " ++ show y ++ ", " ++ show z ++ ")"
   
-instance Num Vec3 where
-  Vec3 a b c + Vec3 i j k = Vec3 (a+i) (b+j) (c+k)
+instance (Num a) => Num (Vec3 a) where
+  -- | Vector addition
+  Vec3 x y z + Vec3 i j k = Vec3 (x+i) (y+j) (z+k)
+  -- | Vector negation / subtraction
+  negate (Vec3 x y z) = Vec3 (-x) (-y) (-z) 
+  
+  -- | Not implemented
+  _ * _ = error "(*) is not implemented for Vec3."
+  -- | Not implemented
+  abs _ = error "abs is not implemented for Vec3."
+  -- | Not implemented
+  signum _ = error "signum is not implemented for Vec3."
+  -- | Not implemented
+  fromInteger _ = error "fromInteger is not implemented for Vec3."
+  
+-- | Converts Vec3 to a list
+fromVec3 :: Vec3 a -> [a]
+fromVec3 (Vec3 x y z) = [x, y, z]
+
+-----------------------------------------------------------
+-- Vector Operations
+-----------------------------------------------------------
+-- | Vector operations
+class VecOps v where
+  -- | Calculates the length of the vector
+  vecLength :: (Floating a) => v a -> a
+  -- | Scales the vector by a factor
+  vecScale :: (Num a) => v a -> a -> v a
+
+instance VecOps Vec3 where
+  vecLength (Vec3 x y z) = sqrt(x*x + y*y + z*z)
+  vecScale (Vec3 x y z) s = Vec3 (x*s) (y*s) (z*s)
+
+-- | Vector scaling by a factor
+
 -----------------------------------------------------------
 -- Unit Testing
 -----------------------------------------------------------
@@ -37,9 +75,18 @@ diff input expected | input /= expected = (0, "Passed")
                     | otherwise         = (1, "Failed: " ++ show input ++ " /= " ++ show expected)
   
 test = do
+  -- Insert test variables here
+  let x = Vec3 1 0 0
+  let y = Vec3 0 1 0
+  let z = Vec3 0 0 1
   -- Insert unit test here
   let trials = same (x+y) (y+x)
              : diff (x+y) (x+z)
+             : same (negate x) ((Vec3 0 0 0)-x)
+             : same (fromVec3 x) [1, 0, 0]
+             : diff (fromVec3 x) (fromVec3 y)
+             : same (vecLength x) (1)
+             : diff (vecLength x) (vecLength y + vecLength z)
              : []
 
   --------------------------
@@ -49,7 +96,4 @@ test = do
   putStrLn "Geo.hs:"
   putStr $ unlines msgs
   putStrLn ("     " ++ show passed ++ " passed, " ++ show failed ++ " failed.")
-    where -- Insert variables below
-      x = Vec3 1 0 0
-      y = Vec3 0 1 0
-      z = Vec3 0 0 1
+  --------------------------

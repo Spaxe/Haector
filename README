@@ -1,3 +1,23 @@
+.-= Haector =-.
+
+[Experimental] SVG, EPS drawing library in Haskell
+
+
+.-= Author =-.
+
+Xavier Ho (contact@xavierho.com)
+    
+   
+.-= Goal =-.
+
+Provides a simple, abstract shape data structure for vector-based output.
+
+
+.-= Dependencies =-.
+
+[TODO]
+
+
   :,; ;;:;t;;,.:;;;;    ;  ;            
  jj;;;jj;;,;;;;;itj;    ;; ;;           
  jjjjjjji;  jjjjjjjj;    ;  ;;          
@@ -35,22 +55,3 @@
   ,;i;;jj                jttjjjjjjjj    
     ;jjjj                      jjjjL    
                 SpaXe
-    
-.-= Haector =-.
-
-[Experimental] SVG, EPS drawing library in Haskell
-
-
-.-= Author =-.
-
-Xavier Ho (contact@xavierho.com)
-    
-   
-.-= Goal =-.
-
-Provides a simple, abstract shape data structure for vector-based output.
-
-
-.-= Dependencies =-.
-
-[TODO]
