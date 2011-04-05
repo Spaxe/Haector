@@ -58,10 +58,20 @@ class VecOps v where
   vecLength :: (Floating a) => v a -> a
   -- | Scales the vector by a factor
   vecScale :: (Num a) => v a -> a -> v a
+  -- | Returns the unit vector
+  vecUnit :: (Floating a) => v a -> v a
+  -- | Dot product
+  vecDot :: (Num a) => v a -> v a -> a
+  -- | Cross product
+  vecCross :: (Num a) => v a -> v a -> v a
 
 instance VecOps Vec3 where
   vecLength (Vec3 x y z) = sqrt(x*x + y*y + z*z)
   vecScale (Vec3 x y z) s = Vec3 (x*s) (y*s) (z*s)
+  vecUnit (Vec3 x y z) = Vec3 (x/s) (y/s) (z/s)
+    where s = vecLength (Vec3 x y z)
+  vecDot (Vec3 x y z) (Vec3 i j k) = x*i + y*j + z*k
+  vecCross (Vec3 x y z) (Vec3 i j k) = Vec3 (y*k-z*j) (x*k-z*i) (x*j-y*i)
 
 -- | Vector scaling by a factor
 
@@ -79,6 +89,7 @@ test = do
   let x = Vec3 1 0 0
   let y = Vec3 0 1 0
   let z = Vec3 0 0 1
+  let w = Vec3 2 0 0
   -- Insert unit test here
   let trials = same (x+y) (y+x)
              : diff (x+y) (x+z)
@@ -87,13 +98,20 @@ test = do
              : diff (fromVec3 x) (fromVec3 y)
              : same (vecLength x) (1)
              : diff (vecLength x) (vecLength y + vecLength z)
+             : same (vecUnit w) x
+             : diff (vecUnit y) (vecUnit z)
+             : same (vecDot x w) 2
+             : diff (vecDot y z) 1
+             : same (vecCross x y) z
+             : diff (vecCross y x) z
              : []
 
   --------------------------
   let failed = sum $ map fst trials
-  let msgs = ["  " ++ msg | (flag, msg) <- trials, flag /= 0]
+  let msgs = ["  " ++ msg | (flag, msg) <- trials]
   let passed = length trials - failed
+  putStrLn "-----------------------"
   putStrLn "Geo.hs:"
-  putStr $ unlines msgs
+  putStr $ unlines $ [show number ++ ":\t" ++ info | (number, info) <- zip [1, 2..] msgs]
   putStrLn ("     " ++ show passed ++ " passed, " ++ show failed ++ " failed.")
   --------------------------
