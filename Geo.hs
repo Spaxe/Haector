@@ -10,7 +10,7 @@ Portability :  portable
 
 Definitions for simple 2D shapes such as rectangles and lines.
 -}
-
+-- stuff
 module Geo (
   -- Uncomment this if you need to expose unit testing
   -- test,
