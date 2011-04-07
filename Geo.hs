@@ -17,7 +17,9 @@ module Geo (
   Vec3 (..),
   fromVec3,
   VecOps (..),
+  Line2 (..),  -- See line2 factory
   line2,
+  fromLine2,
   LineOps (..)
 ) where
   
@@ -74,7 +76,7 @@ instance VecOps Vec3 where
   vecCross (Vec3 x y z) (Vec3 i j k) = Vec3 (y*k-z*j) (x*k-z*i) (x*j-y*i)
 
 -----------------------------------------------------------
--- | Primitive Geometry
+-- | Line object
 -----------------------------------------------------------
 data Line2 = Line2 Vec3 Vec3
   deriving (Eq)
@@ -109,6 +111,21 @@ instance LineOps Line2 Vec3 where
   lineStart (Line2 a _) = a
   lineEnd (Line2 _ b) = b
   lineVec (Line2 a b) = b - a
+
+-----------------------------------------------------------
+-- | Round Corner object
+-----------------------------------------------------------
+{- C-----            C   --
+   |    |              --
+   |    |  =====>    --
+   -----O            .    O
+   Represents an 90-degree arc, centred at origin O, with a radius of |C-O|.
+   The orientation of the arc is in the bounding box defined by the diagram
+   above. 
+-}
+data RoundCorner = RoundCorner Vec3 Vec3
+    deriving (Eq)
+  
 
 -----------------------------------------------------------
 -- Unit Testing
