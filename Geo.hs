@@ -124,8 +124,27 @@ instance LineOps Line2 Vec3 where
    above. 
 -}
 data RoundCorner = RoundCorner Vec3 Vec3
-    deriving (Eq)
+  deriving (Eq)
   
+instance Show RoundCorner where
+  show (RoundCorner (Vec3 ox oy oz) (Vec3 cx cy cz)) | oz /= 1 || cz /= 1 = "RoundCorner(" ++ full ++ ")"
+                                                     | otherwise          = "RoundCorner(" ++ partial ++ ")"
+    where
+      full = show ox ++ ", " ++ show oy ++ ", " ++ show oz ++ ")(" ++ show cx ++ ", " ++ show cy ++ ", " ++ show cz
+      partial = show ox ++ ", " ++ show oy ++ ")(" ++ show cx ++ ", " ++ show cy
+      
+-- | Creates a new RoundCorner object, at origin (ox, oy), with bounding box corner (cx, cy)
+roundCorner :: Double -> Double -> Double -> Double -> RoundCorner
+roundCorner ox oy cx cy = RoundCorner (Vec3 ox oy 1) (Vec3 cx cy 1)
+
+-- | Converts the bounding box to a list of Vec3
+fromRoundCorner :: RoundCorner -> [Vec3]
+fromRoundCorner (RoundCorner a b) = [a, b]
+
+-----------------------------------------------------------
+-- | Bounding Box Operations
+-----------------------------------------------------------
+
 
 -----------------------------------------------------------
 -- Unit Testing
@@ -144,6 +163,8 @@ test = do
   let w = Vec3 2 0 0
   let a = line2 0 1 2 3
   let b = line2 0 1 1 2
+  let c1 = roundCorner 0 1 2 3
+  let c2 = roundCorner 1 1 2 2
   -- Insert unit test here
   let trials = same (x+y) (y+x)
              : diff (x+y) (x+z)
@@ -164,6 +185,9 @@ test = do
              : same (lineEnd b) (Vec3 1 2 1)
              : diff (lineVec a) (lineVec b)
              : same (lineVec b) (x + y)
+             : same (fromRoundCorner c1) (fromLine2 a)
+             : diff (fromRoundCorner c1) (fromRoundCorner c2)
+             : same c1 (RoundCorner (Vec3 0 1 1) (Vec3 2 3 1))
              : []
 
   --------------------------
