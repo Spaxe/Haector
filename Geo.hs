@@ -14,18 +14,13 @@ Definitions for simple 2D shapes such as rectangles and lines.
 module Geo (
   -- Uncomment this if you need to expose unit testing
   -- test,
-  Vec3 (..),
-  fromVec3,
-  VecOps (..),
-  Line2 (..),  -- See line2 factory
-  line2,
-  fromLine2,
-  LineOps (..)
+  Vector
 ) where
   
 -----------------------------------------------------------
 -- | Vector Definition - It all starts here
 -----------------------------------------------------------
+{-
 -- 3D Vector (2D Homogeneous)
 data Vec3 = Vec3 Double Double Double
             deriving (Eq)
@@ -51,33 +46,45 @@ instance Num Vec3 where
 -- | Converts Vec3 to a list
 fromVec3 :: Vec3 -> [Double]
 fromVec3 (Vec3 x y z) = [x, y, z]
-
+-}
 -----------------------------------------------------------
--- | Vector Operations
+-- Vector Definition and Operations
 -----------------------------------------------------------
-class VecOps v where
-  -- | Calculates the length of the vector
-  vecLength :: v -> Double
-  -- | Scales the vector by a factor
-  vecScale :: v -> Double -> v
-  -- | Returns the unit vector
-  vecUnit :: v -> v
-  -- | Dot product
-  vecDot :: v -> v -> Double
-  -- | Cross product
-  vecCross :: v -> v -> v
+-- | For now, our vector is a specialised list of numbers.
+type Vector = [Double]
 
-instance VecOps Vec3 where
-  vecLength (Vec3 x y z) = sqrt(x*x + y*y + z*z)
-  vecScale (Vec3 x y z) s = Vec3 (x*s) (y*s) (z*s)
-  vecUnit (Vec3 x y z) = Vec3 (x/s) (y/s) (z/s)
-    where s = vecLength (Vec3 x y z)
-  vecDot (Vec3 x y z) (Vec3 i j k) = x*i + y*j + z*k
-  vecCross (Vec3 x y z) (Vec3 i j k) = Vec3 (y*k-z*j) (x*k-z*i) (x*j-y*i)
 
+-- | Returns the length of the vector in mathematics terms.
+-- | That is, sqrt(a*a + b*b + ... + n*n)
+vecLength :: Vector -> Double
+vecLength v = sqrt $ sum $ map (** 2) v
+
+
+-- | Returns a vector scaled by a factor.
+-- | s * (a, b, c ...) = (s*a, s*b, s*c, ... )
+vecScale :: Double -> Vector -> Vector
+vecScale s v = map (* s) v
+
+
+-- | Returns the unit vector.
+-- | unit vector = v / |v|, which is the length of the vector.
+vecUnit :: Vector -> Vector
+vecUnit v = vecScale (1/vecLength v) v 
+
+
+-- | Returns the dot vector.
+-- | [a, b, c ...] dot [x, y, z, ...] = a*x + b*y + c*z + ...
+vecDot :: Vector -> Vector -> Double
+vecDot u v = sum $ zipWith (*) u v
+
+
+-- | Returns the cross vector. Note, only defined for a 3-vector!
+vecCross :: Vector -> Vector -> Vector
+vecCross (x:y:z:u) (i:j:k:v) = [y*k-z*j, x*k-z*i, x*j-y*i]
 -----------------------------------------------------------
 -- | Line object
 -----------------------------------------------------------
+{-
 data Line2 = Line2 Vec3 Vec3
   deriving (Eq)
 
@@ -95,10 +102,11 @@ line2 a b c d = Line2 (Vec3 a b 1) (Vec3 c d 1)
 -- | Converts line to a list of Vec3
 fromLine2 :: Line2 -> [Vec3]
 fromLine2 (Line2 a b) = [a, b] 
-
+-}
 -----------------------------------------------------------
 -- | Line Operations
 -----------------------------------------------------------
+{-
 class LineOps n v | n -> v where
   -- | Returns the starting vector
   lineStart :: n -> v
@@ -111,7 +119,7 @@ instance LineOps Line2 Vec3 where
   lineStart (Line2 a _) = a
   lineEnd (Line2 _ b) = b
   lineVec (Line2 a b) = b - a
-
+-}
 -----------------------------------------------------------
 -- | Round Corner object
 -----------------------------------------------------------
@@ -123,6 +131,8 @@ instance LineOps Line2 Vec3 where
    The orientation of the arc is in the bounding box defined by the diagram
    above. 
 -}
+
+{-
 data RoundCorner = RoundCorner Vec3 Vec3
   deriving (Eq)
   
@@ -140,7 +150,7 @@ roundCorner ox oy cx cy = RoundCorner (Vec3 ox oy 1) (Vec3 cx cy 1)
 -- | Converts the bounding box to a list of Vec3
 fromRoundCorner :: RoundCorner -> [Vec3]
 fromRoundCorner (RoundCorner a b) = [a, b]
-
+-}
 -----------------------------------------------------------
 -- | Bounding Box Operations
 -----------------------------------------------------------
@@ -157,17 +167,26 @@ diff input expected | input /= expected = (0, "Passed")
   
 test = do
   -- Insert test variables here
-  let x = Vec3 1 0 0
-  let y = Vec3 0 1 0
-  let z = Vec3 0 0 1
-  let w = Vec3 2 0 0
-  let a = line2 0 1 2 3
-  let b = line2 0 1 1 2
-  let c1 = roundCorner 0 1 2 3
-  let c2 = roundCorner 1 1 2 2
+  let x = [1, 0, 0]
+  let y = [0, 1, 0]
+  let z = [0, 0, 1]
+  let w = [2, 0, 0]
+  --let a = line2 0 1 2 3
+  --let b = line2 0 1 1 2
+  --let c1 = roundCorner 0 1 2 3
+  --let c2 = roundCorner 1 1 2 2
   -- Insert unit test here
-  let trials = same (x+y) (y+x)
-             : diff (x+y) (x+z)
+  let trials = same (vecLength x) (1)
+             : diff (vecLength x) (vecLength y + vecLength z)
+             : same (vecScale 5 x) [5, 0, 0]
+             : same (vecScale 0.5 w) x
+             : same (vecUnit w) x
+             : diff (vecUnit y) (vecUnit z)
+             : same (vecDot x w) 2
+             : diff (vecDot y z) 1
+             : same (vecCross x y) z
+             : diff (vecCross y x) z
+             {-
              : same (negate x) ((Vec3 0 0 0)-x)
              : same (fromVec3 x) [1, 0, 0]
              : diff (fromVec3 x) (fromVec3 y)
@@ -188,6 +207,8 @@ test = do
              : same (fromRoundCorner c1) (fromLine2 a)
              : diff (fromRoundCorner c1) (fromRoundCorner c2)
              : same c1 (RoundCorner (Vec3 0 1 1) (Vec3 2 3 1))
+             
+             -}
              : []
 
   --------------------------
