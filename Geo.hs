@@ -16,37 +16,7 @@ module Geo (
   -- test,
   Vector
 ) where
-  
------------------------------------------------------------
--- | Vector Definition - It all starts here
------------------------------------------------------------
-{-
--- 3D Vector (2D Homogeneous)
-data Vec3 = Vec3 Double Double Double
-            deriving (Eq)
-            
-instance Show Vec3 where
-  show (Vec3 x y z) = "Vec3(" ++ show x ++ ", " ++ show y ++ ", " ++ show z ++ ")"
-  
-instance Num Vec3 where
-  -- | Vector addition
-  Vec3 x y z + Vec3 i j k = Vec3 (x+i) (y+j) (z+k)
-  -- | Vector negation / subtraction
-  negate (Vec3 x y z) = Vec3 (-x) (-y) (-z) 
-  
-  -- | Not implemented
-  _ * _ = error "(*) is not implemented for Vec3."
-  -- | Not implemented
-  abs _ = error "abs is not implemented for Vec3."
-  -- | Not implemented
-  signum _ = error "signum is not implemented for Vec3."
-  -- | Not implemented
-  fromInteger _ = error "fromInteger is not implemented for Vec3."
-  
--- | Converts Vec3 to a list
-fromVec3 :: Vec3 -> [Double]
-fromVec3 (Vec3 x y z) = [x, y, z]
--}
+
 -----------------------------------------------------------
 -- Vector Definition and Operations
 -----------------------------------------------------------
@@ -58,7 +28,6 @@ type Vector = [Double]
 -- | That is, sqrt(a*a + b*b + ... + n*n)
 vecLength :: Vector -> Double
 vecLength v = sqrt $ sum $ map (** 2) v
-
 
 -- | Returns a vector scaled by a factor.
 -- | s * (a, b, c ...) = (s*a, s*b, s*c, ... )
@@ -82,44 +51,26 @@ vecDot u v = sum $ zipWith (*) u v
 vecCross :: Vector -> Vector -> Vector
 vecCross (x:y:z:u) (i:j:k:v) = [y*k-z*j, x*k-z*i, x*j-y*i]
 -----------------------------------------------------------
--- | Line object
+-- | Line
 -----------------------------------------------------------
-{-
-data Line2 = Line2 Vec3 Vec3
-  deriving (Eq)
+-- | A line has a starting point and an end point
+-- | For a 2D Line, always use a 3rd extra component with value 1, like:
+-- | Line [1, 2, 1] [5, 3, 1]
+-- | For affine transformation purposes.
+data Line = Line {
+            lineStart :: Vector,
+            lineEnd :: Vector 
+            } deriving (Eq, Show)
 
-instance Show Line2 where
-  show (Line2 (Vec3 a b x) (Vec3 c d y)) | x /= 1 || y /= 1 = "Line2(" ++ full ++ ")"
-                                         | otherwise        = "Line2(" ++ partial ++ ")"
-    where
-      full = show a ++ ", " ++ show b ++ ", " ++ show x ++ ")(" ++ show c ++ ", " ++ show d ++ ", " ++ show y
-      partial = show a ++ ", " ++ show b ++ ")(" ++ show c ++ ", " ++ show d
-  
--- | Creates a new Line2 object
-line2 :: Double -> Double -> Double -> Double -> Line2
-line2 a b c d = Line2 (Vec3 a b 1) (Vec3 c d 1)
 
--- | Converts line to a list of Vec3
-fromLine2 :: Line2 -> [Vec3]
-fromLine2 (Line2 a b) = [a, b] 
--}
------------------------------------------------------------
--- | Line Operations
------------------------------------------------------------
-{-
-class LineOps n v | n -> v where
-  -- | Returns the starting vector
-  lineStart :: n -> v
-  -- | Returns the ending vector
-  lineEnd :: n -> v
-  -- | Returns the vector represented by the line
-  lineVec :: n -> v
-  
-instance LineOps Line2 Vec3 where
-  lineStart (Line2 a _) = a
-  lineEnd (Line2 _ b) = b
-  lineVec (Line2 a b) = b - a
--}
+-- | Converts the line to a list of vectors
+fromLine :: Line -> [Vector]
+fromLine a = [lineStart a, lineEnd a]
+
+
+-- | Returns the vector that represents the line at origin.
+lineVec :: Line -> Vector
+lineVec (Line a b) = zipWith (-) b a
 -----------------------------------------------------------
 -- | Round Corner object
 -----------------------------------------------------------
@@ -167,25 +118,30 @@ diff input expected | input /= expected = (0, "Passed")
   
 test = do
   -- Insert test variables here
-  let x = [1, 0, 0]
-  let y = [0, 1, 0]
+  let x = [1, 0, 1]
+  let y = [0, 1, 1]
   let z = [0, 0, 1]
-  let w = [2, 0, 0]
-  --let a = line2 0 1 2 3
-  --let b = line2 0 1 1 2
+  let w = [2, 0, 1]
+  let x0 = [1, 0, 0]
+  let y0 = [0, 1, 0]
+  let a = Line x y
+  let b = Line z y
   --let c1 = roundCorner 0 1 2 3
   --let c2 = roundCorner 1 1 2 2
   -- Insert unit test here
-  let trials = same (vecLength x) (1)
+  let trials = same (vecLength x) (sqrt(2.0))
              : diff (vecLength x) (vecLength y + vecLength z)
-             : same (vecScale 5 x) [5, 0, 0]
-             : same (vecScale 0.5 w) x
-             : same (vecUnit w) x
+             : same (vecScale 5 x) [5, 0, 5]
+             : same (vecScale 0.5 w) [1, 0, 0.5]
+             : same (vecUnit z) z
              : diff (vecUnit y) (vecUnit z)
-             : same (vecDot x w) 2
-             : diff (vecDot y z) 1
-             : same (vecCross x y) z
-             : diff (vecCross y x) z
+             : same (vecDot x w) 3
+             : diff (vecDot y z) 2
+             : same (vecCross x0 y0) z
+             : diff (vecCross y0 x0) z
+             : same (fromLine a) ([x, y])
+             : same (lineVec a) [-1, 1, 0]
+             : same (lineVec b) [0, 1, 0]
              {-
              : same (negate x) ((Vec3 0 0 0)-x)
              : same (fromVec3 x) [1, 0, 0]
