@@ -1,7 +1,7 @@
 .-= Haector =-.
 
-[Experimental] SVG, EPS drawing library in Haskell
-
+SVG, EPS drawing library in Haskell.
+At the current stage, Haector uses Wumpus-Core for SVG/EPS output.
 
 .-= Author =-.
 
@@ -10,7 +10,7 @@ Xavier Ho (contact@xavierho.com)
    
 .-= Goal =-.
 
-Provides a simple, abstract shape data structure for vector-based output.
+Provides a set of simple functions to draw vector shapes
 
 
 .-= Dependencies =-.
