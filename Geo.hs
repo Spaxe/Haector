@@ -21,7 +21,8 @@ module Geo (
   drawText,
   fillTextBox,
   drawRoundRect,
-  fillRoundRect
+  fillRoundRect,
+  fillRoundTextBox
 ) where
 
 import Wumpus.Core
@@ -32,8 +33,8 @@ import System.Directory
 -----------------------------------------------------------
 -- | Configuration Constants
 -----------------------------------------------------------
-default_line_width = 1.5
 default_font_size = 12
+default_line_width = fromIntegral default_font_size / 12
 deafult_font_size_px = fromIntegral default_font_size / 3 * 4
 tau = 2 * pi
 
@@ -58,13 +59,16 @@ drawText rgb xy s =
 -- | Draws a filled textbox
 fillTextBox :: RGBi -> RGBi -> Double -> Double -> RGBi -> String -> DPicture
 fillTextBox stroke_rgb fill_rgb a b text_rgb s =
-  multi [fillRect stroke_rgb fill_rgb a b width height,
-         drawText text_rgb (P2 x y) s]
+  multi [fillRect stroke_rgb fill_rgb a b (a+width) (b+height),
+         text]
     where
-      width = ptSize (textWidth default_font_size (length s + 2))
-      height = deafult_font_size_px
-      y = b + deafult_font_size_px / 4
-      x = a + deafult_font_size_px / 2
+      text = drawText text_rgb (P2 x y) s
+      width = (boundaryWidth $ boundary text) + padding * 2
+      height = (boundaryHeight $ boundary text) + padding
+      x = a + padding
+      y = b + padding
+      padding = deafult_font_size_px / 4
+      string = escapeString s
       
 -- | Draw a rounded rectangle.
 -- | The first point must be the bottom left corner, and then the top right corner.
@@ -77,6 +81,22 @@ drawRoundRect rgb a b c d =
 fillRoundRect :: RGBi -> RGBi -> Double -> Double -> Double -> Double -> DPicture
 fillRoundRect stroke_rgb fill_rgb a b c d = 
   frame [fillStroke fill_rgb std_stroke stroke_rgb (roundRectangle a b c d)]
+  
+-- | Draw a filled, founded textbox.
+-- | The first point must be the bottom left corner, and then the top right corner.
+fillRoundTextBox :: RGBi -> RGBi -> Double -> Double -> RGBi -> String -> DPicture
+fillRoundTextBox stroke_rgb fill_rgb a b text_rgb s = 
+  multi [fillRoundRect stroke_rgb fill_rgb a b (a+width) (b+height),
+         text]
+    where
+      text = drawText text_rgb (P2 x y) s
+      width = (boundaryWidth $ boundary text) + padding * 2
+      height = (boundaryHeight $ boundary text) + padding
+      x = a + padding
+      y = b + padding
+      padding = deafult_font_size_px / 4
+      string = escapeString s
+      
 
 -----------------------------------------------------------
 -- | Drawing Primitives
@@ -96,13 +116,14 @@ arcTo radius x y ang1 ang2 = curveTo b c d
 -- | The first point must be the bottom left corner, and then the top right corner.
 roundRectangle :: Double -> Double -> Double -> Double -> DPrimPath
 roundRectangle a b c d = 
-  primPath (P2 start_x start_y) [lineTo (P2 (start_x+line_len) start_y),
-                                 arcTo radius (c-radius) (b+radius) (tau*3/4) tau,
-                                 arcTo radius (c-radius) (d-radius) 0 (tau/4),
-                                 lineTo (P2 (start_x) d),
-                                 arcTo radius (a+radius) (d-radius) (tau/4) (tau/2),
-                                 arcTo radius (a+radius) (b+radius) (tau/2) (tau*3/4)
-                                ] 
+  primPath (P2 (start_x+line_len) start_y) 
+    [
+      arcTo radius (c-radius) (b+radius) (tau*3/4) tau,
+      arcTo radius (c-radius) (d-radius) 0 (tau/4),
+      lineTo (P2 (start_x) d),
+      arcTo radius (a+radius) (d-radius) (tau/4) (tau/2),
+      arcTo radius (a+radius) (b+radius) (tau/2) (tau*3/4)
+    ] 
     where
       radius = abs((d-b)/2)
       start_x = a + radius

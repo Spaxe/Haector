@@ -29,8 +29,10 @@ main = do
   createDirectoryIfMissing True filepath
   let r = multi [
                  --fillTextBox black yellow 0 0 black "This is a text.",
-                 fillRoundRect black yellow 6 6 60 18,
-                 fillRoundRect blue red 24 24 80 36
+                 --fillRoundTextBox black yellow 6 6 black "Mrraa! :3",
+                 fillTextBox black yellow 6 60 black "This is a text",
+                 fillRoundTextBox black yellow 6 6 black "The quick brown fox jumps over the lazy dog",
+                 fillRoundTextBox black yellow 6 32 black "q"
                 ]
   writeSVG (filepath ++ "test.svg") r
   writeEPS (filepath ++ "test.eps") r
