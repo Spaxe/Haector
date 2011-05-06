@@ -11,19 +11,19 @@ Portability :  portable
 The Geo module provides a series of basic shapes drawing functions.
 -}
 
-module Geo (
+module Geo
   -- data structures and constants
-  rectangle,
-  std_stroke,
+  ( rectangle
+  , std_stroke
   -- drawing functions
-  drawRect,
-  fillRect,
-  drawText,
-  fillTextBox,
-  drawRoundRect,
-  fillRoundRect,
-  fillRoundTextBox
-) where
+  , drawRect
+  , fillRect
+  , drawText
+  , fillTextBox
+  , drawRoundRect
+  , fillRoundRect
+  , fillRoundTextBox
+  ) where
 
 import Wumpus.Core
 import Wumpus.Core.Colour (black, red, blue)
@@ -59,17 +59,17 @@ drawText rgb xy s =
 -- | Draws a filled textbox
 fillTextBox :: RGBi -> RGBi -> Double -> Double -> RGBi -> String -> DPicture
 fillTextBox stroke_rgb fill_rgb a b text_rgb s =
-  multi [fillRect stroke_rgb fill_rgb a b (a+width) (b+height),
-         text]
-    where
-      text = drawText text_rgb (P2 x y) s
-      width = (boundaryWidth $ boundary text) + padding * 2
-      height = (boundaryHeight $ boundary text) + padding
-      x = a + padding
-      y = b + padding
-      padding = deafult_font_size_px / 4
-      string = escapeString s
-      
+  multi [ fillRect stroke_rgb fill_rgb a b (a+width) (b+height)
+        , text
+        ] where
+          text = drawText text_rgb (P2 x y) s
+          width = (boundaryWidth $ boundary text) + padding * 2
+          height = (boundaryHeight $ boundary text) + padding
+          x = a + padding
+          y = b + padding
+          padding = deafult_font_size_px / 4
+          string = escapeString s
+        
 -- | Draw a rounded rectangle.
 -- | The first point must be the bottom left corner, and then the top right corner.
 drawRoundRect :: RGBi -> Double -> Double -> Double -> Double -> DPicture
@@ -86,30 +86,31 @@ fillRoundRect stroke_rgb fill_rgb a b c d =
 -- | The first point must be the bottom left corner, and then the top right corner.
 fillRoundTextBox :: RGBi -> RGBi -> Double -> Double -> RGBi -> String -> DPicture
 fillRoundTextBox stroke_rgb fill_rgb a b text_rgb s = 
-  multi [fillRoundRect stroke_rgb fill_rgb a b (a+width) (b+height),
-         text]
-    where
-      text = drawText text_rgb (P2 x y) s
-      width = (boundaryWidth $ boundary text) + padding * 2
-      height = (boundaryHeight $ boundary text) + padding
-      x = a + padding
-      y = b + padding
-      padding = deafult_font_size_px / 4
-      string = escapeString s
-      
+  multi [ fillRoundRect stroke_rgb fill_rgb a b (a+width) (b+height)
+        , text
+        ] where
+          text = drawText text_rgb (P2 x y) s
+          width = (boundaryWidth $ boundary text) + padding * 2
+          height = (boundaryHeight $ boundary text) + padding
+          x = a + padding
+          y = b + padding
+          padding = deafult_font_size_px / 4
+          string = escapeString s
+            
+
 
 -----------------------------------------------------------
 -- | Drawing Primitives
 -----------------------------------------------------------
 rectangle :: Double -> Double -> Double -> Double -> DPrimPath
-rectangle a b c d = primPath (P2 a b) [lineTo (P2 c b),
-                                       lineTo (P2 c d),
-                                       lineTo (P2 a d)]
+rectangle a b c d = primPath (P2 a b) [ lineTo (P2 c b)
+                                      , lineTo (P2 c d)
+                                      , lineTo (P2 a d)]
 
 -- topLeftArc :: Double -> Point2 Double -> AbsPathSegment Double
 arcTo radius x y ang1 ang2 = curveTo b c d
   where
-    (a, b, c, d) = bezierArc radius ang1 ang2 (P2 x y)
+  (a, b, c, d) = bezierArc radius ang1 ang2 (P2 x y)
 
 -- | Draws a rectangle where the left and right edges are semi-circles.
 -- | A square will yield a circle.
@@ -117,14 +118,12 @@ arcTo radius x y ang1 ang2 = curveTo b c d
 roundRectangle :: Double -> Double -> Double -> Double -> DPrimPath
 roundRectangle a b c d = 
   primPath (P2 (start_x+line_len) start_y) 
-    [
-      arcTo radius (c-radius) (b+radius) (tau*3/4) tau,
-      arcTo radius (c-radius) (d-radius) 0 (tau/4),
-      lineTo (P2 (start_x) d),
-      arcTo radius (a+radius) (d-radius) (tau/4) (tau/2),
-      arcTo radius (a+radius) (b+radius) (tau/2) (tau*3/4)
-    ] 
-    where
+    [ arcTo radius (c-radius) (b+radius) (tau*3/4) tau
+    , arcTo radius (c-radius) (d-radius) 0 (tau/4)
+    , lineTo (P2 (start_x) d)
+    , arcTo radius (a+radius) (d-radius) (tau/4) (tau/2)
+    , arcTo radius (a+radius) (b+radius) (tau/2) (tau*3/4)
+    ] where
       radius = abs((d-b)/2)
       start_x = a + radius
       start_y = b

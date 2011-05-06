@@ -23,16 +23,15 @@ import System.Directory
 -----------------------------------------------------------
 -- | Drawing Test
 -----------------------------------------------------------
+globalScale = scalingMatrix 2 2
+
 main :: IO ()
 main = do
   let filepath = "./output/"
   createDirectoryIfMissing True filepath
-  let r = multi [
-                 --fillTextBox black yellow 0 0 black "This is a text.",
-                 --fillRoundTextBox black yellow 6 6 black "Mrraa! :3",
-                 fillTextBox black yellow 6 60 black "This is a text",
-                 fillRoundTextBox black yellow 6 6 black "The quick brown fox jumps over the lazy dog",
-                 fillRoundTextBox black yellow 6 32 black "q"
-                ]
+  let r = transform globalScale $ multi [ fillTextBox black yellow 6 60 black "This is a text"
+                                        , fillRoundTextBox black yellow 6 6 black "The quick brown fox jumps over the lazy dog"
+                                        , fillRoundTextBox black yellow 6 32 black "q"
+                                        ]
   writeSVG (filepath ++ "test.svg") r
   writeEPS (filepath ++ "test.eps") r
