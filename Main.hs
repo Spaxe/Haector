@@ -14,10 +14,9 @@ This program requires Wumpus-0.43.0.
 
 module Main where
 
-import Geo
+import EBNF
 
 import Wumpus.Core
-import Wumpus.Core.Colour (black, red, blue, green, yellow)
 import System.Directory
 
 -----------------------------------------------------------
@@ -37,6 +36,13 @@ main = do
         $ transform globalTranslate
         $ fst $ draw
         [ hLine black 10
+        , terminal "+"
+        ]
+  writeSVG (filepath ++ "test.svg") r
+  writeEPS (filepath ++ "test.eps") r
+  
+{-
+        [ hLine black 10
         , textBox black yellow black "Mrraa"
         , hLine black 50
         , drawBranch [ vLine black (-50)
@@ -52,7 +58,5 @@ main = do
         , roundTextBox black yellow black "The quick brown fox jumps over the lazy dog"
         , hLine black 10
         , roundTextBox black yellow black "q"
-        -- , fst $ hLine black (-100) 6 106
         ]
-  writeSVG (filepath ++ "test.svg") r
-  writeEPS (filepath ++ "test.eps") r
+-}

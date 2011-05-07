@@ -21,6 +21,8 @@ module Geo
   , vLine
   , textBox
   , roundTextBox
+  , leftRoundDown
+  , downRoundRight
   -- basic drawing functions
   -- , drawLine
   -- , drawRect
@@ -129,6 +131,28 @@ roundTextBox stroke_rgb fill_rgb text_rgb s =
     y = -padding
     padding = deafult_font_size_px / 4
     string = escapeString s
+    
+-- | --+
+-- |   |
+-- | Draws a rounded corner
+leftRoundDown :: RGBi -> Component
+leftRoundDown rgb = 
+  ( frame [ostroke rgb std_stroke $ path] 
+  , V2 r (-r)
+  ) where
+    r = deafult_font_size_px
+    path = primPath (P2 0 0) [arcTo r 0 (-r) 0 (tau/4)]
+    
+-- | |
+-- | +--
+-- | Draws a rounded corner
+downRoundRight :: RGBi -> Component
+downRoundRight rgb = 
+  ( frame [ostroke rgb std_stroke $ path] 
+  , V2 r (-r)
+  ) where
+    r = deafult_font_size_px
+    path = primPath (P2 0 0) [arcTo r r 0 (tau/2) (tau*3/4)]
 
 -----------------------------------------------------------
 -- | Absolute Drawing Functions
@@ -176,7 +200,6 @@ rectangle a b c d = primPath (P2 a b) [ lineTo (P2 c b)
                                       , lineTo (P2 c d)
                                       , lineTo (P2 a d)]
 
--- topLeftArc :: Double -> DPoint2 -> AbsPathSegment Double
 arcTo radius x y ang1 ang2 = curveTo b c d
   where
   (a, b, c, d) = bezierArc radius ang1 ang2 (P2 x y)
@@ -197,6 +220,7 @@ roundRectangle a b c d =
       start_x = a + radius
       start_y = b
       line_len = max 0 (c - a - radius*2)
+                                      
                                        
 -----------------------------------------------------------
 -- | Defualt stroke style
