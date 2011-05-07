@@ -14,7 +14,7 @@ This program requires Wumpus-0.43.0.
 
 module Main where
 
-import EBNF
+import EBNFRepr
 
 import Wumpus.Core
 import System.Directory
@@ -37,6 +37,7 @@ main = do
         $ transform globalTranslate
         $ fst
         $ drawDiagram name
+        $ drawOptional
         $ drawOneOrMany
         $ drawTerminals
           [ nonterminal "The"

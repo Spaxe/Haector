@@ -26,6 +26,7 @@ module Geo
   , rightRoundUp
   , upRoundLeft
   , leftRoundDown
+  , upRoundRight
   , text
   -- component type
   , Component
@@ -165,7 +166,7 @@ rightRoundDown rgb =
   , V2 r (-r)
   ) where
     r = default_font_size_px / 2
-    path = primPath (P2 0 0) [arcTo r 0 (-r) 0 (tau/4)]
+    path = primPath (P2 0 0) [arcTo r 0 (-r) (tau/4) 0]
     
 -- | |
 -- | +->
@@ -211,6 +212,18 @@ leftRoundDown rgb =
     r = default_font_size_px / 2
     path = primPath (P2 0 0) [arcTo r 0 (-r) (tau/4) (tau/2)]
 
+-- | +->
+-- | | 
+-- | Draws a rounded corner
+upRoundRight :: RGBi -> Component
+upRoundRight rgb = 
+  ( frame [ostroke rgb std_stroke $ path] 
+  , V2 r r
+  ) where
+    r = default_font_size_px / 2
+    path = primPath (P2 0 0) [arcTo r r 0 (tau/2) (tau/4)]
+
+    
 -----------------------------------------------------------
 -- | Absolute Drawing Functions
 -----------------------------------------------------------

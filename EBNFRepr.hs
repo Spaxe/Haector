@@ -1,5 +1,5 @@
 {- |
-Module      :  EBNF.hs
+Module      :  EBNFRepr.hs
 Description :  Special representation for EBNF grammar
 Copyright   :  (C) 2011 by Xavier Ho
 License     :  MIT License
@@ -11,7 +11,7 @@ Portability :  portable
 For Representing EBNF Grammar; not officially part of this library.
 -}
 
-module EBNF
+module EBNFRepr
   ( terminal
   , nonterminal
   , special
@@ -32,6 +32,8 @@ module EBNF
   , branchOneOrMany
   , drawDiagram
   , branchDiagram
+  , drawOptional
+  , branchOptional
   ) where
 
 import Geo
@@ -81,6 +83,7 @@ drRail = downRoundRight black
 ruRail = rightRoundUp black
 ulRail = upRoundLeft black
 ldRail = leftRoundDown black
+urRail = upRoundRight black
 
 -- | Adds a begin and an end rail
 diagram :: String -> [Component] -> [Component]
@@ -111,7 +114,7 @@ drawTerminals c = [draw $ terminals c]
 branchTerminals :: [Component] -> [Component]
 branchTerminals c = [drawBranch $ terminals c]
 
--- | Additional Draw modes that are EBNF specific
+-- | One or many repeated elements
 oneOrMany :: [Component] -> [Component]
 oneOrMany components =
   [ inner
@@ -125,7 +128,7 @@ oneOrMany components =
   ] where
     inner = drawBranch components
     width = boundaryWidth $ boundary $ fst inner
-    height = (boundaryHeight $ boundary $ fst inner) - default_font_size_px
+    height = (boundaryHeight $ boundary $ fst inner) - default_font_size_px / 2
     
 drawOneOrMany :: [Component] -> [Component]
 drawOneOrMany c = [draw $ oneOrMany c]
@@ -133,12 +136,58 @@ drawOneOrMany c = [draw $ oneOrMany c]
 branchOneOrMany :: [Component] -> [Component]
 branchOneOrMany c = [drawBranch $ oneOrMany c]
 
-  
-  
-  
-  
-  
-  
+-- | Optional element
+optional :: [Component] -> [Component]
+optional components =
+  [ optionalComponents
+  , hRail outer_width
+  ] where
+    inner = draw components
+    optionalComponents = drawBranch
+      [ rdRail
+      -- , vRail (-height)
+      , drRail
+      , inner
+      , ruRail
+      -- , vRail height
+      , urRail
+      ]
+    width = boundaryWidth $ boundary $ fst inner
+    outer_width = boundaryWidth $ boundary $ fst optionalComponents
+    height = (boundaryHeight $ boundary $ fst inner) - default_font_size_px / 2
+
+drawOptional :: [Component] -> [Component]
+drawOptional c = [draw $ optional c]
+
+branchOptional :: [Component] -> [Component]
+branchOptional c = [drawBranch $ optional c]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
   
   
