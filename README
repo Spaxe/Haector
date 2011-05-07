@@ -8,8 +8,11 @@ Xavier Ho (contact@xavierho.com)
 
 .-= Dependencies =-.
 
-[TODO]
+Wumpus-Core-0.43.0
 
+.-= To-Do List =-.
+(Incomplete, mainly for features that I can think of but not urgent.)
+Allow oneOrMany to tightly wrap the elements if it's only a sequence.
 
   :,; ;;:;t;;,.:;;;;    ;  ;            
  jj;;;jj;;,;;;;;itj;    ;; ;;           
