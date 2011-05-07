@@ -23,15 +23,36 @@ import System.Directory
 -----------------------------------------------------------
 -- | Drawing Test
 -----------------------------------------------------------
+tau = 2 * pi
+globalTranslate = translationMatrix 0 10
+globalRotate = rotationMatrix 0
 globalScale = scalingMatrix 2 2
 
 main :: IO ()
 main = do
   let filepath = "./output/"
   createDirectoryIfMissing True filepath
-  let r = transform globalScale $ multi [ fillTextBox black yellow 6 60 black "This is a text"
-                                        , fillRoundTextBox black yellow 6 6 black "The quick brown fox jumps over the lazy dog"
-                                        , fillRoundTextBox black yellow 6 32 black "q"
-                                        ]
+  let r = transform globalScale 
+        $ transform globalRotate
+        $ transform globalTranslate
+        $ fst $ draw
+        [ hLine black 10
+        , textBox black yellow black "Mrraa"
+        , hLine black 50
+        , drawBranch [ vLine black (-50)
+                     , textBox black yellow black "Nested"
+                     , hLine black 50
+                     , roundTextBox black yellow black "#"
+                     , vLine black 50
+                     ]
+        , draw [ hLine black 150 ]
+        , hLine black 25
+        , textBox black yellow black "The cake is a lie"
+        , hLine black 50
+        , roundTextBox black yellow black "The quick brown fox jumps over the lazy dog"
+        , hLine black 10
+        , roundTextBox black yellow black "q"
+        -- , fst $ hLine black (-100) 6 106
+        ]
   writeSVG (filepath ++ "test.svg") r
   writeEPS (filepath ++ "test.eps") r
