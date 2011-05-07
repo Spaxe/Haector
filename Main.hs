@@ -26,6 +26,7 @@ tau = 2 * pi
 globalTranslate = translationMatrix 0 10
 globalRotate = rotationMatrix 0
 globalScale = scalingMatrix 2 2
+name = "test"
 
 main :: IO ()
 main = do
@@ -35,7 +36,7 @@ main = do
         $ transform globalRotate
         $ transform globalTranslate
         $ fst
-        $ drawDiagram "Test:"
+        $ drawDiagram name
         $ drawOneOrMany
         $ drawTerminals
           [ nonterminal "The"
@@ -46,5 +47,5 @@ main = do
           , terminal "."
           ]
 
-  writeSVG (filepath ++ "test.svg") r
-  writeEPS (filepath ++ "test.eps") r
+  writeSVG (filepath ++ name ++ ".svg") r
+  writeEPS (filepath ++ name ++ ".eps") r
