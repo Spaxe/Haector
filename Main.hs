@@ -35,7 +35,7 @@ main = do
         $ transform globalRotate
         $ transform globalTranslate
         $ fst $ draw
-        [ hLine black 10
+        [ hRail 10
         , terminal "+"
         ]
   writeSVG (filepath ++ "test.svg") r

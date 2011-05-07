@@ -15,11 +15,15 @@ module EBNF
   ( terminal
   , nonterminal
   , special
+  , hRail
+  , vRail
+  -- Exposing Geo methods
+  , draw
   ) where
 
 import Geo
 
-import Wumpus.Core.Colour (RGBi, black)
+import Wumpus.Core.Colour (RGBi(..), black)
 
 -- Some nice colours
 -- Green
@@ -44,3 +48,11 @@ nonterminal = textBox black orange black
 -- | Draws a special non-terminal
 special :: String -> Component
 special = textBox black yellow black
+
+-- | Draws a horizontal connector
+hRail :: Double -> Component
+hRail = hLine black
+
+-- | Draws a vertical connector
+vRail :: Double -> Component
+vRail = vLine black

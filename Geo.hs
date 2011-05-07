@@ -23,6 +23,8 @@ module Geo
   , roundTextBox
   , leftRoundDown
   , downRoundRight
+  -- component type
+  , Component
   -- basic drawing functions
   -- , drawLine
   -- , drawRect
