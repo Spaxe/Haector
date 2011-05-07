@@ -34,29 +34,17 @@ main = do
   let r = transform globalScale 
         $ transform globalRotate
         $ transform globalTranslate
-        $ fst $ draw
-        [ hRail 10
-        , terminal "+"
-        ]
+        $ fst
+        $ drawDiagram "Test:"
+        $ drawOneOrMany
+        $ drawTerminals
+          [ nonterminal "The"
+          , special "cake"
+          , nonterminal "is"
+          , nonterminal "a"
+          , special "lie"
+          , terminal "."
+          ]
+
   writeSVG (filepath ++ "test.svg") r
   writeEPS (filepath ++ "test.eps") r
-  
-{-
-        [ hLine black 10
-        , textBox black yellow black "Mrraa"
-        , hLine black 50
-        , drawBranch [ vLine black (-50)
-                     , textBox black yellow black "Nested"
-                     , hLine black 50
-                     , roundTextBox black yellow black "#"
-                     , vLine black 50
-                     ]
-        , draw [ hLine black 150 ]
-        , hLine black 25
-        , textBox black yellow black "The cake is a lie"
-        , hLine black 50
-        , roundTextBox black yellow black "The quick brown fox jumps over the lazy dog"
-        , hLine black 10
-        , roundTextBox black yellow black "q"
-        ]
--}

@@ -1,2 +1,1 @@
-ghc --make Main
-Main
+runhaskell Main

@@ -21,8 +21,12 @@ module Geo
   , vLine
   , textBox
   , roundTextBox
-  , leftRoundDown
+  , rightRoundDown
   , downRoundRight
+  , rightRoundUp
+  , upRoundLeft
+  , leftRoundDown
+  , text
   -- component type
   , Component
   -- basic drawing functions
@@ -32,6 +36,10 @@ module Geo
   -- , drawText
   -- , drawRoundRect
   -- , fillRoundRect
+  -- metrics
+  , default_font_size
+  , default_line_width
+  , default_font_size_px
   ) where
 
 import Wumpus.Core
@@ -44,7 +52,7 @@ import System.Directory
 -----------------------------------------------------------
 default_font_size = 12
 default_line_width = fromIntegral default_font_size / 12
-deafult_font_size_px = fromIntegral default_font_size / 3 * 4
+default_font_size_px = fromIntegral default_font_size / 3 * 4
 tau = 2 * pi
 
 -----------------------------------------------------------
@@ -60,7 +68,7 @@ drawBranch components = (fst $ draw' components identityMatrix [] (V2 0 0), (V2 
 
 -- | Draw helper
 draw' :: [Component] -> DMatrix3'3 -> [DPicture] -> DVec2 -> Component
-draw' [] matrix pictures point = (multi pictures, point)
+draw' [] _ pictures point = (multi pictures, point)
 draw' (component:components) matrix pictures (V2 x y) = 
   let shifted_picture = transform matrix $ fst component
       tx = vector_x $ snd component
@@ -98,63 +106,110 @@ vLine rgb len =
   ( drawLine rgb 0 0 0 len
   , V2 0 len
   )
+  
+-- | Draws text
+text :: RGBi -> String -> Component
+text text_rgb s =
+  ( t
+  , V2 0 (-height)
+  ) where
+    t = drawText text_rgb (P2 x y) s
+    width = (boundaryWidth $ boundary t) + padding * 2
+    height = (boundaryHeight $ boundary t) + padding
+    x = padding + 0.5
+    y = -padding
+    padding = default_font_size_px / 4
+    string = escapeString s
 
 -- | Draws a filled textbox
 textBox :: RGBi -> RGBi -> RGBi -> String -> Component
 textBox stroke_rgb fill_rgb text_rgb s =
-  ( multi [box, text] 
+  ( multi [box, t] 
   , V2 width 0
   ) where
     baseline = -height/2
     topline = height/2
     box = fillRect stroke_rgb fill_rgb 0 baseline width topline
-    text = drawText text_rgb (P2 x y) s
-    width = (boundaryWidth $ boundary text) + padding * 2
-    height = (boundaryHeight $ boundary text) + padding
-    x = padding
+    t = drawText text_rgb (P2 x y) s
+    width = (boundaryWidth $ boundary t) + padding * 2
+    height = (boundaryHeight $ boundary t) + padding
+    x = padding + 0.5
     y = -padding
-    padding = deafult_font_size_px / 4
+    padding = default_font_size_px / 4
     string = escapeString s
           
 -- | Draw a filled, founded textbox.
 -- | The first point must be the bottom left corner, and then the top right corner.
 roundTextBox :: RGBi -> RGBi -> RGBi -> String -> Component
 roundTextBox stroke_rgb fill_rgb text_rgb s = 
-  ( multi [box, text]
+  ( multi [box, t]
   , V2 width 0
   ) where
     baseline = -height/2
     topline = height/2
     box = fillRoundRect stroke_rgb fill_rgb 0 baseline width topline
-    text = drawText text_rgb (P2 x y) s
-    width = (boundaryWidth $ boundary text) + padding * 2
-    height = (boundaryHeight $ boundary text) + padding
-    x = padding
+    t = drawText text_rgb (P2 x y) s
+    width = (boundaryWidth $ boundary t) + padding * 2
+    height = (boundaryHeight $ boundary t) + padding
+    x = padding + 0.5
     y = -padding
-    padding = deafult_font_size_px / 4
+    padding = default_font_size_px / 4
     string = escapeString s
     
 -- | --+
--- |   |
+-- |   v
 -- | Draws a rounded corner
-leftRoundDown :: RGBi -> Component
-leftRoundDown rgb = 
+rightRoundDown :: RGBi -> Component
+rightRoundDown rgb = 
   ( frame [ostroke rgb std_stroke $ path] 
   , V2 r (-r)
   ) where
-    r = deafult_font_size_px
+    r = default_font_size_px / 2
     path = primPath (P2 0 0) [arcTo r 0 (-r) 0 (tau/4)]
     
 -- | |
--- | +--
+-- | +->
 -- | Draws a rounded corner
 downRoundRight :: RGBi -> Component
 downRoundRight rgb = 
   ( frame [ostroke rgb std_stroke $ path] 
   , V2 r (-r)
   ) where
-    r = deafult_font_size_px
+    r = default_font_size_px / 2
     path = primPath (P2 0 0) [arcTo r r 0 (tau/2) (tau*3/4)]
+    
+-- |   ^
+-- | --+
+-- | Draws a rounded corner
+rightRoundUp :: RGBi -> Component
+rightRoundUp rgb = 
+  ( frame [ostroke rgb std_stroke $ path] 
+  , V2 r r
+  ) where
+    r = default_font_size_px / 2
+    path = primPath (P2 0 0) [arcTo r 0 r (tau*3/4) tau]
+    
+-- | <-+
+-- |   |
+-- | Draws a rounded corner
+upRoundLeft :: RGBi -> Component
+upRoundLeft rgb = 
+  ( frame [ostroke rgb std_stroke $ path] 
+  , V2 (-r) r
+  ) where
+    r = default_font_size_px / 2
+    path = primPath (P2 0 0) [arcTo r (-r) 0 0 (tau/4)]
+    
+-- | +--
+-- | v 
+-- | Draws a rounded corner
+leftRoundDown :: RGBi -> Component
+leftRoundDown rgb = 
+  ( frame [ostroke rgb std_stroke $ path] 
+  , V2 (-r) (-r)
+  ) where
+    r = default_font_size_px / 2
+    path = primPath (P2 0 0) [arcTo r 0 (-r) (tau/4) (tau/2)]
 
 -----------------------------------------------------------
 -- | Absolute Drawing Functions
