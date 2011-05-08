@@ -55,7 +55,8 @@ styleDef = emptyDef
          , nestedComments = False
          , identStart = letter <|> digit <|> (oneOf "_") <|> (oneOf "'")
          , identLetter = alphaNum <|> oneOf "_"
-         -- , opStart = oneOf "|(){}[]+.:=\<>&!;"
+         -- , opStart = oneOf "|({[+.:\\<&!;"
+         -- , opLetter = oneOf ")}]:="
          , caseSensitive = True
          }
 
@@ -81,11 +82,11 @@ production = do
 -}
 
 -- Expression
-expression :: Parser [Expression]
+expression :: Parser Expression
 expression = do
   a <- alternative
   e <- expression'
-  return $ a:e
+  return $ OR $ a:e
   
 expression' :: Parser [Expression]
 expression' = 
@@ -110,42 +111,43 @@ alternative' = do
 -- Term
 term :: Parser Expression
 term = 
-      (do s <- stringLiteral lexer
-          return $ Terminal s)
-  <|> (do s <- identifier lexer
-          return $ Nonterminal s)
-  <|> (do symbol lexer "$"
-          s <- many (noneOf "$")
-          symbol lexer "$"
-          return $ Special s)
-  <|> (do s <- parens lexer (term)
-          return $ s)
-  <|> (do s <- brackets lexer (term)
-          return $ Optional s)
-  <|> (do s <- braces lexer (term)
-          symbol lexer "+"
-          return $ Many s)
-  <|> (do s <- braces lexer (term)
-          return $ Some s)
-  <|> (do symbol lexer "<"
-          s1 <- many (noneOf "&")
-          symbol lexer "&"
-          s2 <- many (noneOf ">")
-          symbol lexer ">"
-          return $ (Terminal s1) :& (Terminal s2))
-  <|> (do symbol lexer "<"
-          s1 <- many (noneOf "!")
-          symbol lexer "!"
-          s2 <- many (noneOf ">")
-          symbol lexer ">"
-          return $ (Terminal s1) :! (Terminal s2))
-        
-
-
-
-
-
-
+      try (do s <- stringLiteral lexer
+              return $ Terminal s)
+  <|> try (do s <- identifier lexer
+              return $ Nonterminal s)
+  <|> try (do symbol lexer "$"
+              s <- many (noneOf "$")
+              symbol lexer "$"
+              return $ Special s)
+  <|> try (do symbol lexer "("
+              s <- expression
+              symbol lexer ")"
+              return $ s)
+  <|> try (do symbol lexer "["
+              s <- expression
+              symbol lexer "]"
+              return $ Optional s)
+  <|> try (do symbol lexer "{"
+              s <- expression
+              symbol lexer "}"
+              symbol lexer "}+"
+              return $ Many s)
+  <|> try (do symbol lexer "{"
+              s <- expression
+              symbol lexer "}"
+              return $ Some s)
+  <|> try (do symbol lexer "<"
+              s1 <- expression
+              symbol lexer "&"
+              s2 <- expression
+              symbol lexer ">"
+              return $ s1 :& s2)
+  <|> try (do symbol lexer "<"
+              s1 <- expression
+              symbol lexer "!"
+              s2 <- expression
+              symbol lexer ">"
+              return $ s1 :! s2)
 
 
 
