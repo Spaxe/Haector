@@ -38,6 +38,10 @@ main = do
         $ fst
         $ drawDiagram name
         $ drawOptional
+        $ drawOptional
+        $ drawOptional
+        $ drawOptional
+        $ drawOptional
         $ drawOneOrMany
         $ drawTerminals
           [ nonterminal "The"
