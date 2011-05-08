@@ -41,17 +41,18 @@ main = do
         -- $ drawOneOrMany
         $ drawAlternative
           [ terminal "GLADoS"
-          , epsilon
           , nonterminal "The"
-          , special "cake"
-          , draw [ terminal "%$#@"
-            , vRail (-50)
-            , terminal ":3"
-            , vRail 50
+          , drawExcept
+            [special "cake"]
+            "not"
+            [ drawExcept
+              [special "fuzzy dice"]
+              "and"
+              [special "Companion Cube"]
             ]
-          -- , nonterminal "is"
-          -- , nonterminal "a"
-          -- , special "lie"
+          , nonterminal "is"
+          , nonterminal "a"
+          , special "lie"
           , terminal "."
           ]
 

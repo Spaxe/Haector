@@ -33,6 +33,7 @@ module Geo
   -- basic drawing functions
   -- , drawLine
   -- , drawRect
+  , drawDashedRect
   -- , fillRect
   -- , drawText
   -- , drawRoundRect
@@ -138,6 +139,7 @@ textBox stroke_rgb fill_rgb text_rgb s =
     y = -padding
     padding = default_font_size_px / 4
     string = escapeString s
+   
           
 -- | Draw a filled, founded textbox.
 -- | The first point must be the bottom left corner, and then the top right corner.
@@ -236,6 +238,11 @@ drawLine rgb a b c d =
 drawRect :: RGBi -> Double -> Double -> Double -> Double -> DPicture
 drawRect rgb a b c d = 
   frame [cstroke rgb std_stroke $ rectangle a b c d]
+  
+-- | Draws a dashed rectangle
+drawDashedRect :: RGBi -> Double -> Double -> Double -> Double -> DPicture
+drawDashedRect rgb a b c d = 
+  frame [cstroke rgb dashed_stroke $ rectangle a b c d]
 
 -- | Draws a filled rectangle
 fillRect :: RGBi -> RGBi -> Double -> Double -> Double -> Double -> DPicture
@@ -297,6 +304,12 @@ roundRectangle a b c d =
 -----------------------------------------------------------
 std_stroke :: StrokeAttr
 std_stroke = default_stroke_attr { line_width = default_line_width } 
+
+dashed_stroke :: StrokeAttr
+dashed_stroke = default_stroke_attr { line_width = default_line_width,
+                                      dash_pattern = 
+                                        Dash 1 [(1, 0), (0, 1)]
+                                    } 
 
 no_stroke :: StrokeAttr
 no_stroke = default_stroke_attr { line_width = 0.0 } 

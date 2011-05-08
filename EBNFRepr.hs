@@ -39,6 +39,8 @@ module EBNFRepr
   , branchZeroOrMany
   , drawAlternative
   , branchAlternative
+  , drawExcept
+  , branchExcept
   ) where
 
 import Geo
@@ -231,13 +233,44 @@ drawAlternative c = [draw $ alternative c]
 branchAlternative :: [Component] -> [Component]
 branchAlternative c = [drawBranch $ alternative c]
 
--- |
+-- | Except elements
+except :: [Component] -> String -> [Component] -> [Component]
+except a s b =
+  dashedBox contents
+    where 
+    maxWidth = max aWidth bWidth
+    aWidth = boundaryWidth $ boundary $ fst $ drawBranch a
+    bWidth = boundaryWidth $ boundary $ fst $ drawBranch b
+    aTrailing = maxWidth - aWidth
+    bTrailing = maxWidth - bWidth
+    a' = [epsilon] ++ a ++ [epsilon]
+    b' = [epsilon] ++ b ++ [epsilon]
+    contents =
+      [ drawBranch [label "", label s, draw $ terminals b', hRail bTrailing]
+      , draw $ terminals a'
+      , hRail aTrailing
+      ]
+      
+dashedBox :: [Component] -> [Component]
+dashedBox contents =
+  [ drawBranch 
+    [(drawDashedRect black 
+        x (y+default_font_size_px * 5 / 8)
+        width (-(height-default_font_size_px/4)),
+    V2 x y)]
+  , inner
+  ] where
+    x = 0 
+    y = 0
+    width = boundaryWidth $ boundary $ fst inner 
+    height = boundaryHeight $ boundary $ fst inner 
+    inner = draw contents
 
+drawExcept :: [Component] -> String -> [Component] -> Component
+drawExcept a s b = draw $ except a s b
 
-
-
-
-
+branchExcept :: [Component] -> String -> [Component] -> Component
+branchExcept a s b = drawBranch $ except a s b
 
 
 
