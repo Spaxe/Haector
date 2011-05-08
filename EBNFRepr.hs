@@ -23,6 +23,7 @@ module EBNFRepr
   , ulRail
   , ldRail
   , label
+  , epsilon
   -- Exposing Geo methods
   , draw
   -- Extended Geo methods
@@ -34,6 +35,10 @@ module EBNFRepr
   , branchDiagram
   , drawOptional
   , branchOptional
+  , drawZeroOrMany
+  , branchZeroOrMany
+  , drawAlternative
+  , branchAlternative
   ) where
 
 import Geo
@@ -84,6 +89,10 @@ ruRail = rightRoundUp black
 ulRail = upRoundLeft black
 ldRail = leftRoundDown black
 urRail = upRoundRight black
+
+-- | Epsilon
+epsilon :: Component
+epsilon = hRail 0
 
 -- | Adds a begin and an end rail
 diagram :: String -> [Component] -> [Component]
@@ -162,19 +171,67 @@ drawOptional c = [draw $ optional c]
 branchOptional :: [Component] -> [Component]
 branchOptional c = [drawBranch $ optional c]
 
+-- | Zero or many element
+zeroOrMany :: [Component] -> [Component]
+zeroOrMany components =
+  [ drawBranch [hRail width]
+  , ldRail
+  -- , vRail (-height)
+  , drRail
+  , inner
+  , ruRail
+  -- , vRail height
+  , ulRail
+  ] where
+    inner = draw components
+    width = (boundaryWidth $ boundary $ fst inner)
+    height = (boundaryHeight $ boundary $ fst inner) - default_font_size_px / 2
+    
+drawZeroOrMany :: [Component] -> [Component]
+drawZeroOrMany c = [draw $ zeroOrMany c]
+
+branchZeroOrMany :: [Component] -> [Component]
+branchZeroOrMany c = [drawBranch $ optional c]
+
+-- | Alternative elements
+alternative :: [Component] -> [Component]
+alternative (component:components) =
+  [ drawBranch [hRail default_font_size_px, component, hRail trailingWidth]
+  , rdRail
+  -- , vRail ((-default_font_size_px)/2)
+  , draw $ alternative' components maxWidth height
+  -- , vRail (default_font_size_px/2)
+  , urRail
+  ] where
+    maxWidth = maximum $ map (boundaryWidth . boundary . fst) (component:components)
+    trailingWidth = maxWidth - width + default_font_size_px
+    width = boundaryWidth $ boundary $ fst component
+    height = boundaryHeight $ boundary $ fst component
+    -- offset = (min height default_font_size_px) + default_font_size_px/2
+    
+alternative' [] _ _ = [epsilon]
+alternative' (component:components) maxWidth offset =
+  [ vRail (-offset)
+  , drawBranch $ alternative' components maxWidth offset'
+  , drRail
+  , component
+  , hRail trailingWidth
+  , ruRail
+  , vRail offset
+  ] where
+    trailingWidth = maxWidth - width
+    width = boundaryWidth $ boundary $ fst component  
+    height = boundaryHeight $ boundary $ fst component
+    offset' = (max height default_font_size_px) + default_font_size_px/2
 
 
+drawAlternative :: [Component] -> [Component]
+drawAlternative c = [draw $ alternative c]
 
+branchAlternative :: [Component] -> [Component]
+branchAlternative c = [drawBranch $ alternative c]
 
-
-
-
-
-
-
-
-
-
+-- |
 
 
 

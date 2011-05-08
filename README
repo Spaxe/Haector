@@ -14,6 +14,8 @@ Wumpus-Core-0.43.0
 (Incomplete, mainly for features that I can think of but not urgent.)
 Allow oneOrMany to tightly wrap the elements if it's only a sequence.
 
+Allow alternative to tightly wrap the elements.
+
   :,; ;;:;t;;,.:;;;;    ;  ;            
  jj;;;jj;;,;;;;;itj;    ;; ;;           
  jjjjjjji;  jjjjjjjj;    ;  ;;          

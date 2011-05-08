@@ -37,18 +37,21 @@ main = do
         $ transform globalTranslate
         $ fst
         $ drawDiagram name
-        $ drawOptional
-        $ drawOptional
-        $ drawOptional
-        $ drawOptional
-        $ drawOptional
-        $ drawOneOrMany
-        $ drawTerminals
-          [ nonterminal "The"
+        -- $ drawOptional
+        -- $ drawOneOrMany
+        $ drawAlternative
+          [ terminal "GLADoS"
+          , epsilon
+          , nonterminal "The"
           , special "cake"
-          , nonterminal "is"
-          , nonterminal "a"
-          , special "lie"
+          , draw [ terminal "%$#@"
+            , vRail (-50)
+            , terminal ":3"
+            , vRail 50
+            ]
+          -- , nonterminal "is"
+          -- , nonterminal "a"
+          -- , special "lie"
           , terminal "."
           ]
 
