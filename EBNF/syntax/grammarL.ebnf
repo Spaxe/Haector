@@ -1,7 +1,5 @@
 grammarL ::= {   $whitespace$ | comment | terminal 
                | nonterminal  | special | symbol};
    
-purpose="With respect to its lexical syntax, a grammar is a 
-sequence of whitespace, comments, terminals, nonterminals, 
-specials and special symbols.";
+purpose="With respect to its lexical syntax, a grammar is a sequence of whitespace, comments, terminals, nonterminals, specials and special symbols.";
 level="lexical"; rank="root".

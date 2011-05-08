@@ -121,7 +121,6 @@ text text_rgb s =
     x = padding + 0.5
     y = -padding
     padding = default_font_size_px / 4
-    string = escapeString s
 
 -- | Draws a filled textbox
 textBox :: RGBi -> RGBi -> RGBi -> String -> Component
@@ -138,7 +137,6 @@ textBox stroke_rgb fill_rgb text_rgb s =
     x = padding + 0.5
     y = -padding
     padding = default_font_size_px / 4
-    string = escapeString s
    
           
 -- | Draw a filled, founded textbox.
@@ -157,7 +155,6 @@ roundTextBox stroke_rgb fill_rgb text_rgb s =
     x = padding + 0.5
     y = -padding
     padding = default_font_size_px / 4
-    string = escapeString s
     
 -- | --+
 -- |   v
@@ -252,7 +249,7 @@ fillRect stroke_rgb fill_rgb a b c d =
 -- | Draws basic text
 drawText :: RGBi -> DPoint2 -> String -> DPicture
 drawText rgb xy s = 
-  frame [escapedlabel rgb stdFont (escapeString s) xy]
+  frame [textlabel rgb stdFont s xy]
 
 -- | Draw a rounded rectangle.
 -- | The first point must be the bottom left corner, and then the top right corner.

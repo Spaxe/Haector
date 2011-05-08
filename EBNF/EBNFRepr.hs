@@ -76,7 +76,10 @@ drawNonterminal = textBox black orange black
 
 -- | Draws a special non-terminal
 drawSpecial :: String -> Component
-drawSpecial = textBox black yellow black
+drawSpecial s 
+  | s == "epsilon"  = epsilon
+  | s == "..."      = textLabel s
+  | otherwise       = textBox black yellow black s
 
 -- | Draws a horizontal connector
 hRail :: Double -> Component
@@ -119,7 +122,7 @@ terminals (component:components) =
     where
     terminals' [] connected = connected
     terminals' (component:components) connected
-      = terminals' components (connected ++ [hRail (default_font_size_px/2), component])
+      = terminals' components (connected ++ [hRail (default_font_size_px*8/5), component])
       
 drawTerminals :: [Component] -> [Component]
 drawTerminals c = [draw $ terminals c]

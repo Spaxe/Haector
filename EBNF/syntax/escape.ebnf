@@ -1,6 +1,4 @@
 escape ::= "\\" ("\\" | "\$" | "\"");
    
-purpose="An {\tt escape} sequence permits the embedding of the
-special characters \\verb'\\', \\verb'\$' and \\verb'\"' in 
-terminal and special symbols.";
+purpose="An {\tt escape} sequence permits the embedding of the special characters \\verb'\\', \\verb'\$' and \\verb'\"' in terminal and special symbols.";
 level="lexical"; rank="child".

@@ -1,9 +1,4 @@
 alternate ::= {term}+ {"\\" {term}+};
    
-purpose="An {\\tt alternate} is a syntactic element that may be
-selected from among alternatives. This production shows how 
-terms are sequenced: normally with just whitespace between them; 
-however a \\verb'\\' placed between them is a request to break
-the sequence into a stack, which might help avoid a diagram that
-is too wide.";
+purpose="An {\\tt alternate} is a syntactic element that may be selected from among alternatives. This production shows how terms are sequenced: normally with just whitespace between them; however a \\verb'\\' placed between them is a request to break the sequence into a stack, which might help avoid a diagram that is too wide.";
 level="grammar"; rank="child".

@@ -1,12 +1,5 @@
 comment ::= "#" {<$any character$ ! $\\n$>} [$\\n$];
    
-purpose="A {\\tt comment} begins with a \\verb'#' and extends to
-the end of the current line. Comments are permitted anywhere
-where whitespace is insignificant and is ignored like 
-whitespace.
-
-This production for a comment uses a novel extension to EBNF and
-to syntax diagrams. \\verb'<'~$e_1$~\\verb'!'~$e_2$~\\verb'>' 
-means match $e_1$ unless it would also match $e_2$.";
+purpose="A {\\tt comment} begins with a \\verb'#' and extends to the end of the current line. Comments are permitted anywhere where whitespace is insignificant and is ignored like whitespace. \\\\This production for a comment uses a novel extension to EBNF and to syntax diagrams. \\verb'<'~$e_1$~\\verb'!'~$e_2$~\\verb'>' means match $e_1$ unless it would also match $e_2$.";
 example="\\verb'# a comment'";
 level="lexical"; rank="child".

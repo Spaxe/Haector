@@ -1,7 +1,5 @@
 nonterminal ::= {$letter$ | $digit$ | "_" | "'"}+;
    
-purpose="A {\tt nonterminal} is a name defined elsewhere by a
-production. They are rendered in syntax diagrams as square 
-cornered boxes.";
+purpose="A {\tt nonterminal} is a name defined elsewhere by a production. They are rendered in syntax diagrams as square cornered boxes.";
 example="\\verb'nonterminal'";
 level="lexical"; rank="child".

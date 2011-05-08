@@ -1,7 +1,5 @@
 terminal ::= "\"" {escape | <$any character$ ! "\"">} "\"";
    
-purpose="A {\tt terminal} symbol is a literal delimited by 
-double quotes. They are rendered in syntax diagrams as round 
-cornered boxes.";
+purpose="A {\tt terminal} symbol is a literal delimited by double quotes. They are rendered in syntax diagrams as round cornered boxes.";
 example="\\verb'\"while\"'"; example="\\verb'\"\\\"'";
 level="lexical"; rank="child".

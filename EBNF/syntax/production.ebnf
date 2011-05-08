@@ -1,14 +1,6 @@
 production ::= nonterminal "::=" expression \
    {";" nonterminal "=" terminal} ".";
    
-purpose="A {\tt production} formally defines a nonterminal 
-symbol. Normally a production consists of the name of the {\tt
-nonterminal} being defined, \\verb'::=', and the {\tt 
-expression} that defines that nonterminal. Optionally, meta-data
-may be attached. Mostly, it is ignored for the purpose of 
-drawing syntax diagrams, but will be exported as XML. Each item
-of meta-data is preceded by a semicolon, named by a nonterminal
-and bound to a terminal value by an equals sign. The value may
-contain limited LaTeX markup.";
+purpose="A {\tt production} formally defines a nonterminal symbol. Normally a production consists of the name of the {\tt nonterminal} being defined, \\verb'::=', and the {\tt expression} that defines that nonterminal. Optionally, meta-data may be attached. Mostly, it is ignored for the purpose of drawing syntax diagrams, but will be exported as XML. Each item of meta-data is preceded by a semicolon, named by a nonterminal and bound to a terminal value by an equals sign. The value may contain limited LaTeX markup.";
 example="\\verb'name ::= firstName lastName.'";
 level="grammar"; rank="child".

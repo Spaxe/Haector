@@ -14,7 +14,8 @@ using Parsec.
 -}
 
 module EBNFParser where
-  
+
+import Data.String.Utils (replace)
 import Text.Parsec
 import Text.Parsec.Token
 import Text.Parsec.String
@@ -53,7 +54,7 @@ styleDef :: LanguageDef st
 styleDef = emptyDef
          { commentLine = "#"
          , nestedComments = False
-         , identStart = letter <|> digit <|> (oneOf "_") <|> (oneOf "'")
+         , identStart = letter <|> digit <|> (oneOf "_") <|> (oneOf "'") 
          , identLetter = alphaNum <|> oneOf "_"
          , opStart = oneOf "|({[+.:\\<&!;"
          , opLetter = oneOf ")}]:="
@@ -146,7 +147,7 @@ term =
   <|> try (do symbol lexer "$"
               s <- many1 (noneOf "$")
               symbol lexer "$"
-              return $ Special s)
+              return $ Special $ replace "\\\\n" "\\n" s)
   <|> try (do symbol lexer "("
               s <- expression
               symbol lexer ")"
@@ -180,15 +181,16 @@ term =
 terminal :: Parser Expression
 terminal = do
   s <- stringLiteral lexer
-  return $ Terminal s
+  return $ Terminal $ replace "<" "&#60;"
+                    $ replace ">" "&#62;" 
+                    $ replace "&" "&amp;" 
+                    s
 
 -- Nonterminal
 nonterminal :: Parser Expression
 nonterminal = do
   s <- identifier lexer
   return $ Nonterminal s
-
-
 
 
 
