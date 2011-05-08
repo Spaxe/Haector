@@ -17,10 +17,16 @@ module Main where
 import EBNFRepr
 import EBNFParser
 import Text.Parsec
-
-import Wumpus.Core
 import System.Directory
 import System.Environment
+import Wumpus.Core ( writeSVG
+                   , writeEPS
+                   , DPicture
+                   , transform
+                   , translationMatrix
+                   , rotationMatrix
+                   , scalingMatrix
+                   )
 
 main :: IO ()
 main = do
@@ -38,7 +44,41 @@ parseFile path = do
 outputProduction :: Production -> IO ()
 outputProduction p@(Production name expr metas) = do
   print p
-    
+  createDirectoryIfMissing True filepath
+  writeSVG (filepath ++ name ++ ".svg") pic
+  writeEPS (filepath ++ name ++ ".eps") pic
+  where 
+    pic = drawProduction p
+    filepath = "./output/"
+  
+drawProduction :: Production -> DPicture
+drawProduction (Production name expr metas) =
+    transform globalScale
+  $ transform globalRotate
+  $ transform globalTranslate
+  $ fst
+  $ drawDiagram name
+  $ drawExpression expr
+  where
+    tau = 2 * pi
+    globalTranslate = translationMatrix 0 0
+    globalRotate = rotationMatrix 0
+    globalScale = scalingMatrix 2 2
+  
+drawExpression :: Expression -> [Component]
+drawExpression e = 
+  case e of
+    Terminal t -> [drawTerminal t]
+    Nonterminal t -> [drawNonterminal t]
+    Special t -> [drawSpecial t]
+    OR es -> drawAlternative $ concat $ map drawExpression es
+    Many e -> drawOneOrMany $ drawExpression e
+    Some e -> drawZeroOrMany $ drawExpression e
+    Optional e -> drawOptional $ drawExpression e
+    Seq es -> drawTerminals $ concat $ map drawExpression $ concat es
+    a :& b -> [drawExcept (drawExpression a) "also" (drawExpression b)]
+    a :! b -> [drawExcept (drawExpression a) "not" (drawExpression b)]
+  
 {-
 parseGrammar :: Expression -> IO ()
 parseGrammar e = do
@@ -67,7 +107,7 @@ main = do
         $ drawDiagram name
         -- $ drawOptional
         -- $ drawOneOrMany
-        $ drawAlternative
+        $ drawalternate
           [ terminal "GLADoS"
           , nonterminal "The"
           , drawExcept

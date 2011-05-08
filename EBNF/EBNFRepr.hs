@@ -12,9 +12,9 @@ For Representing EBNF Grammar; not officially part of this library.
 -}
 
 module EBNFRepr
-  ( terminal
-  , nonterminal
-  , special
+  ( drawTerminal
+  , drawNonterminal
+  , drawSpecial
   , hRail
   , vRail
   , rdRail
@@ -41,6 +41,8 @@ module EBNFRepr
   , branchAlternative
   , drawExcept
   , branchExcept
+  -- Basic representation data type
+  , Component
   ) where
 
 import Geo
@@ -65,16 +67,16 @@ textLabel :: String -> Component
 textLabel = text black
 
 -- | Draws a terminal
-terminal :: String -> Component
-terminal = roundTextBox black green black
+drawTerminal :: String -> Component
+drawTerminal = roundTextBox black green black
 
 -- | Draws a non-terminal
-nonterminal :: String -> Component
-nonterminal = textBox black orange black
+drawNonterminal :: String -> Component
+drawNonterminal = textBox black orange black
 
 -- | Draws a special non-terminal
-special :: String -> Component
-special = textBox black yellow black
+drawSpecial :: String -> Component
+drawSpecial = textBox black yellow black
 
 -- | Draws a horizontal connector
 hRail :: Double -> Component
