@@ -22,7 +22,7 @@ module EBNFRepr
   , ruRail
   , ulRail
   , ldRail
-  , label
+  , textLabel
   , epsilon
   -- Exposing Geo methods
   , draw
@@ -61,8 +61,8 @@ red = RGBi 210 25 24
 blue = RGBi 45 48 222
 
 -- | Draws a black text
-label :: String -> Component
-label = text black
+textLabel :: String -> Component
+textLabel = text black
 
 -- | Draws a terminal
 terminal :: String -> Component
@@ -99,7 +99,7 @@ epsilon = hRail 0
 -- | Adds a begin and an end rail
 diagram :: String -> [Component] -> [Component]
 diagram s components =
-  [label s]
+  [textLabel s]
   ++ [hRail default_font_size_px]
   ++ (terminals components)
   ++ [hRail default_font_size_px]
@@ -246,7 +246,7 @@ except a s b =
     a' = [epsilon] ++ a ++ [epsilon]
     b' = [epsilon] ++ b ++ [epsilon]
     contents =
-      [ drawBranch [label "", label s, draw $ terminals b', hRail bTrailing]
+      [ drawBranch [textLabel "", textLabel s, draw $ terminals b', hRail bTrailing]
       , draw $ terminals a'
       , hRail aTrailing
       ]

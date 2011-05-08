@@ -1,1 +1,1 @@
-runhaskell Main
+runhaskell Main syntax/test.ebnf

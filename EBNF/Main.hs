@@ -15,10 +15,34 @@ This program requires Wumpus-0.43.0.
 module Main where
 
 import EBNFRepr
+import EBNFParser
+import Text.Parsec
 
 import Wumpus.Core
 import System.Directory
+import System.Environment
 
+main :: IO ()
+main = do
+  args <- getArgs
+  mapM_ parseFile args
+
+parseFile :: FilePath -> IO ()
+parseFile path = do
+  input <- readFile path
+  result <- return (runParser expression () path input)
+  case result of
+    Left err -> print err
+    Right gs -> print gs
+
+{-
+parseGrammar :: Expression -> IO ()
+parseGrammar e = do
+  print e
+  print "End."
+-}
+  
+{-
 -----------------------------------------------------------
 -- | Drawing Test
 -----------------------------------------------------------
@@ -58,3 +82,4 @@ main = do
 
   writeSVG (filepath ++ name ++ ".svg") r
   writeEPS (filepath ++ name ++ ".eps") r
+-}
