@@ -30,11 +30,15 @@ main = do
 parseFile :: FilePath -> IO ()
 parseFile path = do
   input <- readFile path
-  result <- return (runParser expression () path input)
+  result <- return (runParser grammar () path input)
   case result of
     Left err -> print err
-    Right gs -> print gs
+    Right (Grammar ps) -> mapM_ outputProduction ps
 
+outputProduction :: Production -> IO ()
+outputProduction p@(Production name expr metas) = do
+  print p
+    
 {-
 parseGrammar :: Expression -> IO ()
 parseGrammar e = do

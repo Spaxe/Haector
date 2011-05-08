@@ -55,8 +55,8 @@ styleDef = emptyDef
          , nestedComments = False
          , identStart = letter <|> digit <|> (oneOf "_") <|> (oneOf "'")
          , identLetter = alphaNum <|> oneOf "_"
-         -- , opStart = oneOf "|({[+.:\\<&!;"
-         -- , opLetter = oneOf ")}]:="
+         , opStart = oneOf "|({[+.:\\<&!;"
+         , opLetter = oneOf ")}]:="
          , caseSensitive = True
          }
 
@@ -67,56 +67,84 @@ lexer = makeTokenParser styleDef
 -----------------------------------------------------------
 -- | Parsers
 -----------------------------------------------------------
-{-
 grammar :: Parser Grammar
 grammar = do
   whiteSpace lexer
-  many production
--}
+  p <- many production
+  return $ Grammar p
 
-{-
+-- Production
 production :: Parser Production
 production = do
   name <- identifier lexer
-  exp <-
--}
-
+  symbol lexer "::="
+  expr <- expression
+  metas <- many metadata
+  symbol lexer "."
+  return $ Production name expr metas
+  
+metadata :: Parser (Nonterminal, Terminal)
+metadata = do
+  symbol lexer ";"
+  n <- identifier lexer
+  symbol lexer "="
+  t <- stringLiteral lexer
+  return (n, t)
+  
 -- Expression
 expression :: Parser Expression
 expression = do
-  a <- alternative
+  a <- alternate
   e <- expression'
-  return $ OR $ a:e
+  if length e == 0 then
+    return a
+  else  
+    return $ OR $ a:e
   
 expression' :: Parser [Expression]
 expression' = 
-      (do symbol lexer "|"
-          a <- alternative
-          e <- expression'
-          return $ a:e)
-   <|> return []
+      try (do symbol lexer "|"
+              a <- alternate
+              e <- expression'
+              return $ a:e)
+  <|> return []
   
-alternative :: Parser Expression
-alternative = do
-  t <- many1 term
-  a <- alternative'
-  return $ Seq $ t:a
+alternate :: Parser Expression
+alternate = do
+  t <- terms
+  a <- alternate'
+  if length t > 1 then
+    if length a > 0 then
+      return $ Seq $ t:a
+    else
+      return $ Seq [t]
+  else
+    return $ head t
 
-alternative' :: Parser [[Expression]]
-alternative' = do
+alternate' :: Parser [[Expression]]
+alternate' = 
+  (do t <- many alternate''
+      return t)
+  <|> return []
+  
+alternate'' :: Parser [Expression]
+alternate'' = do
   symbol lexer "\\"
-  t <- many1 term
-  return [t]
+  t <- terms
+  return t
   
 -- Term
+terms :: Parser [Expression]
+terms = many1 term
+
 term :: Parser Expression
 term = 
-      try (do s <- stringLiteral lexer
-              return $ Terminal s)
-  <|> try (do s <- identifier lexer
-              return $ Nonterminal s)
+      try (do s <- terminal
+              return s)
+  <|> try (do s <- nonterminal
+              return s)
   <|> try (do symbol lexer "$"
-              s <- many (noneOf "$")
+              s <- many1 (noneOf "$")
               symbol lexer "$"
               return $ Special s)
   <|> try (do symbol lexer "("
@@ -129,7 +157,6 @@ term =
               return $ Optional s)
   <|> try (do symbol lexer "{"
               s <- expression
-              symbol lexer "}"
               symbol lexer "}+"
               return $ Many s)
   <|> try (do symbol lexer "{"
@@ -149,9 +176,17 @@ term =
               symbol lexer ">"
               return $ s1 :! s2)
 
+-- Terminal
+terminal :: Parser Expression
+terminal = do
+  s <- stringLiteral lexer
+  return $ Terminal s
 
-
-
+-- Nonterminal
+nonterminal :: Parser Expression
+nonterminal = do
+  s <- identifier lexer
+  return $ Nonterminal s
 
 
 
