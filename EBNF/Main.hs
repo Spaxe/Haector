@@ -63,7 +63,7 @@ drawProduction (Production name expr metas) =
     tau = 2 * pi
     globalTranslate = translationMatrix 0 0
     globalRotate = rotationMatrix 0
-    globalScale = scalingMatrix 2 2
+    globalScale = scalingMatrix 1 1
   
 drawExpression :: Expression -> [Component]
 drawExpression e = 
