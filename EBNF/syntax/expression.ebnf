@@ -1,0 +1,6 @@
+expression  ::= alternate expression2;
+   
+purpose="An {\tt expression} forms the right-hand side of a
+production. It is specified with the auxiliary element {\tt
+expression2} to resolve left recursion.";
+level="grammar"; rank="child".

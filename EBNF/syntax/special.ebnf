@@ -1,0 +1,9 @@
+special ::= "$" {escape | <$any character$ ! "$">} "$";
+   
+purpose="A {\tt special} symbol is an informally defined
+nonterminal delimited by dollar signs. Normally a special is 
+rendered like a nonterminal in a square cornered box, but with
+italics. There are some special specials that are drawn 
+differently: \\verb'\$epsilon\$'; \\verb'\$...\$'.";
+example="\\verb'\$any character you want\$'";
+level="lexical"; rank="child".

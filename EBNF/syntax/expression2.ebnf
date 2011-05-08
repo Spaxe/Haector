@@ -1,0 +1,4 @@
+expression2 ::= "|" alternate expression2 | $epsilon$;
+   
+purpose="How an {\tt expression} ends.";
+level="grammar"; rank="child".

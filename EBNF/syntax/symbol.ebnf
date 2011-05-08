@@ -1,0 +1,11 @@
+symbol ::= 
+     "::=" | "(" | ")" | "{" | "}" | "[" | "]" | 
+     "<" | ">"    | "|"   | "+" | "." | "\\"  |
+     "&" | "!" | ";" | "=";
+   
+purpose="The special symbols are: \\verb'|', 
+\\verb'(', \\verb')', \\verb'{', \\verb'}', 
+\\verb'[', \\verb']', \\verb'+', \\verb'.', 
+\\verb'::=', \\verb'\\', \\verb'<', \\verb'>',
+\\verb'&', \\verb'!',  \\verb';', and \\verb'='.";
+level="lexical"; rank="child".

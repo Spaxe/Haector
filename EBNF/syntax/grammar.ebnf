@@ -1,0 +1,4 @@
+grammar ::= {production};
+   
+purpose="A {\tt grammar} is a sequence of productions.";
+level="grammar"; rank="root".

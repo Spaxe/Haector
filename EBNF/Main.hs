@@ -1,6 +1,6 @@
 {- |
 Module      :  Main.hs
-Description :  Functions for drawing simple 2D geometry.
+Description :  EBNF Testing
 Copyright   :  (C) 2011 by Xavier Ho
 License     :  MIT License
 

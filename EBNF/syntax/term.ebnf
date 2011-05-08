@@ -1,0 +1,12 @@
+term ::=   nonterminal 
+         | terminal 
+         | special 
+         | "(" expression ")" 
+         | "[" expression "]" 
+         | "{" expression "}" ["+"] 
+         | "<" expression "&" expression ">" 
+         | "<" expression "!" expression ">";
+   
+purpose="A {\tt term} is a syntactic element that may be placed
+in sequence with others."; 
+level="grammar"; rank="child".
